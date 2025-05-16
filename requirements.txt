@@ -1,0 +1,9 @@
+psycopg2-binary
+pgvector
+requests
+kafka-python
+python-dotenv
+beautifulsoup4
+sqlalchemy
+openai
+feedparser

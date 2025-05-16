@@ -22,19 +22,46 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 DATABASE_URL = "postgresql://ssafynews:ssafynews13@localhost:5433/news"
 
 # 데이터베이스 엔진 생성
+# 기존 코드와 동일
 engine = create_engine(DATABASE_URL)
 metadata = MetaData()
 
-# 기존 테이블 로드
-articles_table = Table(
-    "news_api_newsarticle",
-    metadata,
-    schema="public",
-    autoload_with=engine
-)
+# ✅ 테이블이 존재하지 않으면 자동 생성
+from sqlalchemy import Column, Integer, String, Text, DateTime, Float, ARRAY
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.exc import ProgrammingError
+
+try:
+    # 이미 존재하는 경우 로드
+    articles_table = Table(
+        "news_api_newsarticle",
+        metadata,
+        schema="public",
+        autoload_with=engine
+    )
+except ProgrammingError:
+    print("테이블이 존재하지 않아 생성합니다.")
+    # 테이블 수동 정의
+    articles_table = Table(
+        "news_api_newsarticle",
+        metadata,
+        Column("id", Integer, primary_key=True, autoincrement=True),
+        Column("title", String),
+        Column("author", String),
+        Column("link", String, unique=True, nullable=False),
+        Column("summary", Text),
+        Column("updated", DateTime),
+        Column("full_text", Text),
+        Column("category", String),
+        Column("keywords", ARRAY(String)),  # 또는 JSONB
+        Column("embedding", ARRAY(Float)),
+        schema="public"
+    )
+    metadata.create_all(engine)
+    print("✅ 테이블 생성 완료")
+
 # 세션 생성
 SessionLocal = sessionmaker(bind=engine)
-
 def insert_article_ignore_duplicate(data: dict):
     session = SessionLocal()
     try:
