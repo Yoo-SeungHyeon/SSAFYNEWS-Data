@@ -3,6 +3,9 @@
 
 ### dotenv ###
 .env
+denv
+*.csv
+
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
