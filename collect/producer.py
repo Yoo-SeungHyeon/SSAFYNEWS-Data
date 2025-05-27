@@ -24,7 +24,7 @@ def rss_n_kafka_producer(URL):
 
     # Kafka 프로듀서 설정
     producer = KafkaProducer(
-            bootstrap_servers='borker:9092',
+            bootstrap_servers='broker:9092',
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
     
@@ -89,6 +89,7 @@ RSS_FEED_URL_LIST = ["https://www.khan.co.kr/rss/rssdata/total_news.xml",       
                     ]
 
 if __name__ == "__main__":
+    time.sleep(60)
     while True:
         for url in RSS_FEED_URL_LIST:
             rss_n_kafka_producer(url)
