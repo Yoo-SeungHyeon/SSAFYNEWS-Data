@@ -10,12 +10,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sentence_transformers import SentenceTransformer
+from pgvector.sqlalchemy import Vector
 
 # 임베딩 모델 로드
 embedding_model = SentenceTransformer('all-mpnet-base-v2')
 
 # PostgreSQL 연결 URL
-DATABASE_URL = "postgresql://ssafynews:ssafynews13@pgvector_db:5432/news"
+DATABASE_URL = "postgresql://airflow:airflow@postgres:5432/news"
 
 # 데이터베이스 엔진 생성
 # 기존 코드와 동일
@@ -49,8 +50,8 @@ except ProgrammingError:
         Column("updated", DateTime),
         Column("full_text", Text),
         Column("category", String),
-        Column("keywords", Text),  # Django 모델에 맞게 TextField
-        Column("embedding", ARRAY(Float)),
+        Column("keywords", Text), 
+        Column("embedding", Vector(768)),
         schema="public"
     )
     metadata.create_all(engine)
