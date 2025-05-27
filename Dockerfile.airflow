@@ -46,10 +46,16 @@ RUN fc-cache -fv
 
 USER airflow
 
-# Python 패키지 설치
+# Python 패키지 설치 (scikit-learn 추가)
 RUN pip install --no-cache-dir \
     apache-airflow-providers-apache-spark \
     pyspark==3.5.4 \
     matplotlib \
-    # 하둡 연결을 위해 추가.
-    hdfs
+    hdfs \
+    wordcloud \
+    konlpy \
+    transformers \
+    torch \
+    scikit-learn
+
+# (워드클라우드 한글 폰트 경로: /usr/share/fonts/truetype/nanum/NanumGothic.ttf)

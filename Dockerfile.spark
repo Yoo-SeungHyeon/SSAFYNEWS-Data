@@ -19,8 +19,16 @@ RUN install_packages \
 # 폰트 캐시 갱신
 RUN fc-cache -fv
 
-# matplotlib 설치
+# 파이썬 패키지 설치 (matplotlib, scikit-learn, wordcloud, konlpy, transformers 등)
 RUN pip install --upgrade pip && \
-    pip install matplotlib
+    pip install \
+        matplotlib \
+        scikit-learn \
+        wordcloud \
+        konlpy \
+        transformers \
+        hdfs \
+        pandas \
+        numpy
 
 USER 1001
