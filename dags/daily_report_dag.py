@@ -1,8 +1,8 @@
 import pendulum
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.operators.bash import BashOperator
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+from airflow.operators.bash import BashOperator
 
 local_tz = pendulum.timezone("Asia/Seoul")
 
@@ -22,19 +22,22 @@ with DAG(
     catchup=False,
     tags=['daily', 'report', 'spark']
 ) as dag:
-    
+
     submit_spark_job = SparkSubmitOperator(
         task_id='spark_daily_report',
         application='/opt/airflow/dags/scripts/spark_daily_report.py',
         conn_id='spark_default',
         application_args=['--date', '{{ ds }}'],
+        conf={
+            "spark.master": "local[*]",  # 클러스터면 spark://spark-master:7077
+            "spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version": "2",
+        },
+        verbose=True,
     )
 
     notify_report_generated = BashOperator(
         task_id='notify_report_generated',
-        bash_command=(
-            'echo "리포트가 생성되었습니다: {{ ds }} 날짜의 이메일 보내기 "'
-        )
+        bash_command='echo "리포트가 생성되었습니다: {{ ds }} 날짜의 이메일 보내기 "'
     )
 
     submit_spark_job >> notify_report_generated
