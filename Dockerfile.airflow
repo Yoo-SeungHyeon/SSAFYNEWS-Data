@@ -1,9 +1,8 @@
-# Dockerfile-airflow
 FROM apache/airflow:2.10.5
 
 USER root
 
-# Java 설치 + 폰트 설치 같이
+# Java, 폰트, 기타 도구 설치
 RUN apt update && apt install -y \
     openjdk-17-jdk \
     curl \
@@ -31,6 +30,17 @@ RUN wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SP
     mv /opt/spark-${SPARK_VERSION}-bin-hadoop3 $SPARK_HOME && \
     rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
 
+# Hadoop 설치 (HDFS 클라이언트 용도)
+ENV HADOOP_VERSION=3.2.1
+ENV HADOOP_HOME=/opt/hadoop
+ENV PATH="${HADOOP_HOME}/bin:${PATH}"
+
+RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz && \
+    tar -xvzf hadoop-3.2.1.tar.gz -C /opt/ && \
+    mv /opt/hadoop-3.2.1 /opt/hadoop && \
+    rm hadoop-3.2.1.tar.gz && \
+    ln -s /opt/hadoop/bin/hdfs /usr/local/bin/hdfs
+
 # 폰트 캐시 갱신
 RUN fc-cache -fv
 
@@ -40,4 +50,6 @@ USER airflow
 RUN pip install --no-cache-dir \
     apache-airflow-providers-apache-spark \
     pyspark==3.5.4 \
-    matplotlib
+    matplotlib \
+    # 하둡 연결을 위해 추가.
+    hdfs

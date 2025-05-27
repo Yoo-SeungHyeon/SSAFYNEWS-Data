@@ -24,7 +24,7 @@ def rss_n_kafka_producer(URL):
 
     # Kafka 프로듀서 설정
     producer = KafkaProducer(
-            bootstrap_servers='localhost:9092',
+            bootstrap_servers='borker:9092',
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
     

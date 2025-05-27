@@ -1,0 +1,9 @@
+feedparser
+kafka-python
+sqlalchemy
+sentence_transformers
+ollama
+beautifulsoup4
+requests
+pgvector
+psycopg2-binary
